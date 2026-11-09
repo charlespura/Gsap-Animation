@@ -1,113 +1,155 @@
+﻿# Orbital
 
-# 🚀 Internet Evolution — GSAP Scroll Showcase
+**An internet flight journal.**
 
-A single-file, scroll-driven storytelling page that takes the visitor through six eras of the internet (1990s → 2050s). As you scroll, a rocket flies down a fixed motion path and **morphs its shape** to match whichever era is currently in view, while each era's visual box runs its own unique GSAP effect (physics, draw-in SVG, scramble text, flip shuffle, drag/inertia, etc).
+Travel through six eras of the web, from the first hyperlinks to possible futures. Orbital pairs a custom 3D rocket with a readable timeline, original illustrations, and scroll-driven animation.
 
-Everything lives in **one HTML file** — no build step, no bundler, no npm install. Just open it in a browser.
+Built with **React · Vite · TypeScript · Three.js · GSAP**.
 
----
+[Explore the code](https://github.com/charlespura/Gsap-Animation) · [Expected GitHub Pages URL](https://charlespura.github.io/Gsap-Animation/)
 
-## ✨ Features
+> The Pages link becomes available after GitHub Pages is enabled and the deployment workflow succeeds.
 
-### Global / page-wide
-| Feature | Description |
-|---|---|
-| **Dark / Light theme toggle** | Button top-right swaps a full CSS-variable palette (`body.light-theme`) with smooth color transitions. |
-| **Scroll progress bar** | Thin gradient bar pinned to the top, fills `0% → 100%` as you scroll the whole document. |
-| **Rocket motion path + morph** | A rocket icon flies along a fixed SVG bezier path (`#motionPath`) as you scroll the entire page. Its body shape **morphs** (via `MorphSVGPlugin`) into a desktop → phone → robot → brain → galaxy-swirl → DNA helix as each era section scrolls into view, with a little "pulse" scale bounce on every morph. |
-| **Hero animations** | Title, badge, subtext, and CTA button fade/slide in on load. |
-| **Parallax hero icons** | Three floating glyphs (✦ ◆ ●) drift and rotate at different speeds as you scroll past the hero. |
-| **Per-section parallax blobs** | Each era section has soft glow "shapes" that drift at their own speed/direction (`ScrollTrigger` scrub) for depth. |
-| **Era text/box reveals** | Each era's text block slides in from alternating left/right, and its visual box scales + rotates in with a `back.out` ease. |
-| **Floating visual boxes** | The big icon card in each era gently floats and tilts as you scroll past it (independent of the reveal-in animation). |
-| **GSAP-driven hover states** | Hero title, hero paragraph, era numbers, year labels (3D tilt), headings, paragraphs, tech-tag pills, and the footer CTA heading all have custom hover tweens (no CSS `:hover` — done via `mouseenter`/`mouseleave` + `gsap.to`). |
-| **Smooth anchor scrolling** | All `<a href="#...">` links scroll smoothly via `ScrollToPlugin` instead of jumping. |
+## What’s inside
 
-### Per-era effects
-| Era | Visual | Effect(s) used |
-|---|---|---|
-| **1990s — Static Web** | 🖥️ Desktop | `MorphSVGPlugin` cycles the shape through star → circle → diamond → hexagon as you scroll through the section; `DrawSVGPlugin` draws a squiggly line stroke-on. |
-| **2000s — Social Web** | 📱 Phone | `ScrambleTextPlugin` scrambles/reveals a rotating list of words ("Web 2.0", "Social Media"...); `TextPlugin` swaps a second line of emoji-text as you scroll. |
-| **2010s — Semantic Web** | 🤖 Robot | `Physics2DPlugin` launches a ball with gravity/velocity when the section is ~20% scrolled; `Flip` shuffles 4 icon tiles into a new random order; `Observer` lights up an "observer active" label on pointer/wheel/touch input. |
-| **2020s+ — Intelligent Web** | 🧠 Brain | `TextPlugin` typewriter-replaces a label through several buzzwords; `MorphSVGPlugin` cycles a second shape (star → circle → triangle → diamond). |
-| **2030s — Immersive Web** | 🌀 Galaxy | `MotionPathPlugin` drives a glowing orb around a closed SVG loop, scrubbed to scroll; `SplitText` explodes a caption into characters and animates them in with stagger. |
-| **2050s — Symbiotic Web** | 🧬 DNA | `MorphSVGPlugin` morphs a shape through brain → star → circle → diamond; `DrawSVGPlugin` draws a network of connecting lines; `Draggable` + `InertiaPlugin` let you **drag-and-throw** a little box with real inertia/bounds. |
+- **Custom 3D rocket:** cream body, orange fins, illuminated window, animated engine, and a star field. Geometry and materials are created in Three.js; no external model downloads.
+- **A navigable flight plan:** jump directly to any decade, follow the desktop mission rail, or read from beginning to end.
+- **Six distinct illustrations:** a browser window, a social network, a mobile map, a conversational interface, a spatial concept, and a deep-space signal.
+- **Purposeful animation:** GSAP entrance sequences, chapter reveals, SVG drawing, and smooth anchor navigation.
+- **Motion controls:** a saved on/off preference and support for system reduced-motion settings.
+- **Responsive navigation:** a mobile menu, keyboard focus states, Escape support, skip link, and reading-progress bar.
+- **WebGL fallback:** a static SVG rocket appears when the browser cannot create a WebGL renderer.
+- **Self-hosted assets:** fonts, artwork, favicon, and application scripts ship with the site.
 
-### Plugins used
-`ScrollTrigger` · `ScrollSmoother` · `ScrollToPlugin` · `MorphSVGPlugin` · `MotionPathPlugin` · `DrawSVGPlugin` · `Flip` · `Draggable` · `InertiaPlugin` · `Observer` · `SplitText` · `ScrambleTextPlugin` · `TextPlugin` · `GSDevTools`
+## The flight plan
 
-*(All loaded from the GSAP 3.15 CDN — some, like `ScrollSmoother` and `GSDevTools`, are Club GreenSock plugins bundled via the CDN links already in the file; if your license/CDN access doesn't include them, see [Troubleshooting](#-troubleshooting) below.)*
+| Era | Chapter | Perspective |
+| --- | --- | --- |
+| 1990s | First contact | Pages, hyperlinks, and dial-up |
+| 2000s | Open channels | Publishing, communities, and online video |
+| 2010s | Always connected | Mobile access, cloud services, and streaming |
+| 2020s | New intelligence | Conversational tools and human judgment |
+| 2030s | Beyond the screen | A speculative look at spatial interfaces |
+| 2050s | The next frontier | A speculative look at long-distance connection |
 
----
+The final two chapters are clearly marked as possible futures. This is a creative field guide, not an exhaustive history or a forecast.
 
-## ⚙️ How it works
-
-1. **One `ScrollTrigger.create()`** spans `top top` → `bottom bottom` of the whole `<body>`, `scrub: 1.2`. On every scroll update it:
-   - Advances the rocket's `MotionPathPlugin` tween progress (`0 → 1`) to match overall scroll progress.
-   - Checks each era section's `getBoundingClientRect().top` to figure out which era is "active" (top has crossed 65% of viewport height).
-   - If the active era changed, `morphSVG`-tweens the rocket's `<path>` `d` attribute to that era's target shape, plus a quick scale-pulse.
-2. **Every other effect is scoped to its own era section** via its own `ScrollTrigger` (`trigger: '#era3'`, etc.), so effects only run/animate while that section is on screen — either `scrub`-tied to scroll position, or fired once via `toggleActions: "play none none none"`.
-3. **Theming** is pure CSS custom properties on `:root` / `body.light-theme` — the JS never touches colors directly except in a few explicit hover tweens.
-4. **No React/Vue/build tooling** — plain `DOMContentLoaded` + vanilla `document.querySelector` calls.
-
----
-
-## 📦 How to clone & run
-
-This is a static single HTML file, so there's nothing to install.
-
-### Option A — just download and open
-1. Save the file as `index.html`.
-2. Double-click it (or drag into a browser tab). Done.
-
-### Option B — clone via git (if you put it in a repo)
-```bash
-git clone <your-repo-url>
-cd <your-repo-folder>
-```
-Then either open `index.html` directly, or serve it locally (recommended, since some browsers restrict certain features on `file://`):
-```bash
-# Python 3
-python3 -m http.server 8000
-
-# or Node
-npx serve .
-```
-Visit `http://localhost:8000` in your browser.
+## Quick start
 
 ### Requirements
-- A modern browser (Chrome/Edge/Firefox/Safari, last ~2 years).
-- An internet connection on first load, since GSAP + plugins are pulled from the jsDelivr CDN — no local install needed.
 
----
+- Node.js **22.12 or newer**
+- npm
+- A modern browser; WebGL is used for the animated rocket
 
-## 🛠 Customization guide
-
-| Want to change... | Edit... |
-|---|---|
-| Colors / theme | The `:root` and `body.light-theme` CSS variable blocks at the top of `<style>`. |
-| Era copy (title, description, tags) | The text inside each `<section class="era-section" id="eraN">` block. |
-| The rocket's flight path | The `d` attribute of `<path id="motionPath">` (an SVG cubic-bezier path in a `0 0 1000 900` viewBox). |
-| The rocket's per-era morph shapes | The `rocketMorphShapes` object in the script (maps `#era1`…`#era6` → an SVG path string). |
-| Which era maps to which shape | Same `rocketMorphShapes` object — keys are section IDs. |
-| Add a 7th era | Duplicate an `<section class="era-section" id="era7">` block, add its entry to the `eras` array (step 7 in the script) **and** to `rocketMorphShapes` (step 18) so the rocket knows to morph there too. |
-| Scroll "stickiness" of effects (how fast they scrub) | The `scrub:` value on each relevant `ScrollTrigger` (`scrub: 1.5` = smoother/slower catch-up, `scrub: true` = 1:1 with scroll). |
-
----
-
-## 🩺 Troubleshooting
-
-- **Nothing animates at all** → Open dev tools console; if you see 404s on the GSAP CDN `<script>` tags, check your network/ad-blocker isn't blocking `cdn.jsdelivr.net`.
-- **`ScrollSmoother is not defined` / `GSDevTools is not defined`** → These are Club GreenSock (paid) plugins. If your CDN access doesn't include them, remove their `<script>` tag and drop them from the `gsap.registerPlugin(...)` call — nothing else in the page depends on them being *used*, they're loaded but not actively invoked elsewhere.
-- **Rocket doesn't morph on some eras** → Make sure each era `<section>` keeps its original `id="eraN"` — the rocket effect looks sections up by ID (`#era1`…`#era6`), not by class or position.
-- **Effects feel laggy on mobile** → Lower the `scrub` values or reduce the number of parallax elements; heavy `filter: drop-shadow(...)` blur effects are the most expensive part on low-end GPUs.
-
----
-
-## 📁 File structure
-
-```
-index.html   ← everything: markup, CSS, and JS in one file
+```bash
+git clone https://github.com/charlespura/Gsap-Animation.git
+cd Gsap-Animation
+npm ci
+npm run dev
 ```
 
-That's it — it's intentionally a single-file build so it's trivial to drop into any static host (GitHub Pages, Netlify, Vercel, S3, etc.) with zero configuration.
+Open the local URL printed by Vite. On Windows PowerShell, use `npm.cmd` instead of `npm` if your execution policy blocks `npm.ps1`.
+
+### Commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start Vite with hot reload |
+| `npm run typecheck` | Check TypeScript without emitting files |
+| `npm run build` | Type-check and create the production site in `dist/` |
+| `npm run preview` | Serve the existing production build locally |
+
+To check the production version:
+
+```bash
+npm run build
+npm run preview
+```
+
+Opening `index.html` directly does not compile React or TypeScript. For XAMPP/Apache or another static host, build first and serve the contents of `dist/`.
+
+## Controls and accessibility
+
+- Choose **Begin the journey** to move to the first chapter.
+- Use the **Flight plan**, chapter links, or desktop mission rail to jump between eras.
+- On smaller screens, open **Menu** to access navigation. Press **Escape** to close it and return focus to the menu button.
+- Use **Motion on/off** at the bottom of the hero to pause or resume animation. The setting is saved locally as `orbital-motion`.
+- System reduced-motion preferences turn motion off by default. Turning motion off removes GSAP motion, disables CSS animation, and renders the rocket without ongoing animation.
+- Keyboard users can use the **Skip to the journey** link and visible focus indicators.
+
+The rocket’s pointer response is decorative; every chapter and navigation control works without it.
+
+## Deploy to GitHub Pages
+
+The workflow at [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds and deploys this static site.
+
+1. Push the project to GitHub, including `package-lock.json` and the workflow file.
+2. Open **Settings → Pages → Build and deployment** in the repository.
+3. Select **GitHub Actions** as the source.
+4. Push to `main` or `master`, or run **Actions → Deploy to GitHub Pages → Run workflow** manually.
+5. Wait for both the `build` and `deploy` jobs to succeed. Find the published URL in the deployment environment or **Settings → Pages**.
+
+For this repository, the expected address is:
+
+**https://charlespura.github.io/Gsap-Animation/**
+
+The workflow uses Node.js 22, installs dependencies with `npm ci`, runs the production build, and uploads only `dist/`. It uses the workflow’s GitHub token; no personal access token or `gh-pages` branch is needed.
+
+Vite’s `base: "./"` keeps generated asset URLs relative, so the same build supports a repository subpath, a domain root, or a custom domain. Navigation uses same-page anchors and needs no SPA rewrite rules.
+
+- **Different deployment branch:** update `on.push.branches` in the workflow.
+- **Custom domain:** add `public/CNAME` containing your domain and configure the domain in GitHub Pages settings.
+- **Another static host:** upload the contents of `dist/` after running `npm run build`.
+
+References: [Vite static deployment](https://vite.dev/guide/static-deploy) · [GitHub Pages publishing settings](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+
+## Project structure
+
+```text
+.github/
+  workflows/deploy.yml       GitHub Pages build and deployment
+public/
+  favicon.svg                Orbital mark
+src/
+  main.tsx                   React entry point
+  App.tsx                    Page and animation lifecycle
+  Journey.tsx                Navigation, controls, layout, and illustrations
+  chapters.ts                Chapter copy, years, tags, and status labels
+  animations.ts              GSAP effects and anchor scrolling
+  ThreeBackdrop.tsx          Rocket geometry, lighting, renderer, and cleanup
+  styles.css                 Palette, typography, layout, and breakpoints
+index.html                   Page metadata and Vite entry
+package.json                 Dependencies and npm commands
+package-lock.json            Locked dependency versions
+tsconfig.json                TypeScript configuration
+vite.config.ts               React plugin, asset paths, and build chunks
+```
+
+## Customize
+
+| Change | File |
+| --- | --- |
+| Chapter titles, descriptions, years, and tags | [`src/chapters.ts`](src/chapters.ts) |
+| Navigation, labels, page layout, and chapter illustrations | [`src/Journey.tsx`](src/Journey.tsx) |
+| Colors, font families, spacing, and responsive layout | [`src/styles.css`](src/styles.css) |
+| Rocket shape, materials, engine, stars, and lighting | [`src/ThreeBackdrop.tsx`](src/ThreeBackdrop.tsx) |
+| Scroll timing, reveals, and SVG drawing | [`src/animations.ts`](src/animations.ts) |
+| Page title, description, and browser theme color | [`index.html`](index.html) |
+
+DM Sans, Space Grotesk, and IBM Plex Mono are bundled through Fontsource. GSAP plugins are imported from npm. There are no CDN script tags, remote textures, or model files to configure.
+
+React Strict Mode is enabled. GSAP contexts, event listeners, and Three.js resources are cleaned up when their owning components unmount.
+
+## Troubleshooting
+
+| Problem | Check |
+| --- | --- |
+| Pages returns 404 | Select GitHub Actions as the Pages source, check the latest workflow, and use the full repository URL. |
+| Deployment does not run | Push to `main` or `master`, update the configured branch, or trigger the workflow manually. |
+| Build fails | Use the required Node version, commit `package-lock.json`, and run `npm ci` followed by `npm run build` locally. |
+| Rocket does not move | Check the Motion control and system reduced-motion setting. A static rocket is expected when WebGL is unavailable. |
+| Source changes do not appear | Use the Vite dev server, or rebuild `dist/` before serving production files. |
+| PowerShell blocks npm | Run the same command using `npm.cmd`. |
+
+Vite may report that the Three.js chunk exceeds its default size warning threshold. This is a build warning; the renderer is split into a separate chunk, and a successful build still produces deployable files.
